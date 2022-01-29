@@ -4,6 +4,11 @@ export enum TaskStatus {
   DONE = 'DONE',
 }
 
+export interface CreateTaskProps {
+  title: string;
+  description: string;
+}
+
 export interface Task {
   id: string;
   title: string;
