@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Patch,
   Post,
@@ -23,16 +24,27 @@ import { TasksService } from './tasks.service';
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
+  private logger = new Logger('TasksController');
+
   @Get()
   getTasks(
     @Query() filters: GetTasksFilterDto,
     @GetUser() user: User,
   ): Promise<Task[]> {
+    this.logger.verbose(
+      `User ${user.username} ${
+        user.id
+      } retrieving all tasks. Filters: ${JSON.stringify(filters)}`,
+    );
     return this.tasksService.getTasks(filters, user);
   }
 
   @Get('/:id')
   getTask(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
+    this.logger.verbose(
+      `User ${user.username} ${user.id} retrieving task ${id}.`,
+    );
+
     return this.tasksService.getTaskById(id, user);
   }
 
@@ -41,6 +53,12 @@ export class TasksController {
     @Body() createTaskDto: CreateTaskDto,
     @GetUser() user: User,
   ): Promise<Task> {
+    this.logger.verbose(
+      `User ${user.username} ${
+        user.id
+      } is creating a new task. Data: ${JSON.stringify(createTaskDto)}`,
+    );
+
     return this.tasksService.createTask(createTaskDto, user);
   }
 
@@ -50,11 +68,21 @@ export class TasksController {
     @Body() statusDto: UpdateTaskStatusDto,
     @GetUser() user: User,
   ): Promise<Task> {
+    this.logger.verbose(
+      `User ${user.username} ${
+        user.id
+      } updating a task ${id}. Status: ${JSON.stringify(statusDto)}`,
+    );
+
     return this.tasksService.updateTaskStatus(id, statusDto.status, user);
   }
 
   @Delete('/:id')
   deleteTask(@Param('id') id: string, @GetUser() user: User): Promise<void> {
+    this.logger.verbose(
+      `User ${user.username} ${user.id} deleting a task ${id}.`,
+    );
+
     return this.tasksService.deleteTask(id, user);
   }
 }
