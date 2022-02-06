@@ -3,7 +3,6 @@ import {
   Logger,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { filter } from 'rxjs';
 import { User } from 'src/auth/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
