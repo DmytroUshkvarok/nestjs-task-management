@@ -19,7 +19,7 @@ export class AuthService {
 
   async signIn(
     authCredentialsDto: AuthCredentialsDto,
-  ): Promise<{ token: string }> {
+  ): Promise<{ accessToken: string }> {
     const isPasswordValid = await this.usersRepository.checkPassword(
       authCredentialsDto,
     );
@@ -31,8 +31,8 @@ export class AuthService {
     const payload: JwtPayload = {
       username: authCredentialsDto.username,
     };
-    const token = await this.jwtService.signAsync(payload);
+    const accessToken = await this.jwtService.signAsync(payload);
 
-    return { token };
+    return { accessToken };
   }
 }
