@@ -1,9 +1,5 @@
-import {
-  NotFoundException,
-  Logger,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { User } from 'src/auth/user.entity';
+import { Logger, InternalServerErrorException } from '@nestjs/common';
+import { User } from '../auth/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
@@ -63,29 +59,16 @@ export class TasksRepository extends Repository<Task> {
 
   async getTaskById(id: string, user: User): Promise<Task> {
     const target = await this.findOne({ id, user });
-
-    if (!target) {
-      throw new NotFoundException(`Task with id ${id} not found.`);
-    }
-
     return target;
   }
 
-  async updateTaskStatus(
-    id: string,
-    status: TaskStatus,
-    user: User,
-  ): Promise<Task> {
-    const target = await this.getTaskById(id, user);
+  async updateTaskStatus(task: Task, status: TaskStatus): Promise<Task> {
+    await this.update(task, { status });
 
-    await this.update(target, { status });
-
-    return { ...target, status };
+    return { ...task, status };
   }
 
-  async deleteTask(id: string, user: User): Promise<void> {
-    const target = await this.getTaskById(id, user);
-
-    await this.delete(target);
+  async deleteTask(task: Task): Promise<void> {
+    await this.delete(task);
   }
 }

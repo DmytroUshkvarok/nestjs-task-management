@@ -11,9 +11,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from 'src/auth/get-user.decorator';
-import { User } from 'src/auth/user.entity';
+import { GetUser } from '../auth/get-user.decorator';
+import { User } from '../auth/user.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { TaskIdDto } from './dto/task-id.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { Task } from './task.entity';
@@ -40,12 +41,12 @@ export class TasksController {
   }
 
   @Get('/:id')
-  getTask(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
+  getTask(@Param() params: TaskIdDto, @GetUser() user: User): Promise<Task> {
     this.logger.verbose(
-      `User ${user.username} ${user.id} retrieving task ${id}.`,
+      `User ${user.username} ${user.id} retrieving task ${params.id}.`,
     );
 
-    return this.tasksService.getTaskById(id, user);
+    return this.tasksService.getTaskById(params.id, user);
   }
 
   @Post()
@@ -64,25 +65,29 @@ export class TasksController {
 
   @Patch('/:id/status')
   updateTaskStatus(
-    @Param('id') id: string,
+    @Param() params: TaskIdDto,
     @Body() statusDto: UpdateTaskStatusDto,
     @GetUser() user: User,
   ): Promise<Task> {
     this.logger.verbose(
-      `User ${user.username} ${
-        user.id
-      } updating a task ${id}. Status: ${JSON.stringify(statusDto)}`,
+      `User ${user.username} ${user.id} updating a task ${
+        params.id
+      }. Status: ${JSON.stringify(statusDto)}`,
     );
 
-    return this.tasksService.updateTaskStatus(id, statusDto.status, user);
+    return this.tasksService.updateTaskStatus(
+      params.id,
+      statusDto.status,
+      user,
+    );
   }
 
   @Delete('/:id')
-  deleteTask(@Param('id') id: string, @GetUser() user: User): Promise<void> {
+  deleteTask(@Param() params: TaskIdDto, @GetUser() user: User): Promise<void> {
     this.logger.verbose(
-      `User ${user.username} ${user.id} deleting a task ${id}.`,
+      `User ${user.username} ${user.id} deleting a task ${params.id}.`,
     );
 
-    return this.tasksService.deleteTask(id, user);
+    return this.tasksService.deleteTask(params.id, user);
   }
 }
